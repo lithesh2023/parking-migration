@@ -1,0 +1,56 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class Setup1693478092622 implements MigrationInterface {
+    name = 'Setup1693478092622'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TABLE "role" ("role_id" integer NOT NULL, "role_name" character varying(20) NOT NULL, "role_desc" character varying(100) NOT NULL, CONSTRAINT "UQ_4810bc474fe6394c6f58cb7c9e5" UNIQUE ("role_name"), CONSTRAINT "PK_df46160e6aa79943b83c81e496e" PRIMARY KEY ("role_id"))`);
+        await queryRunner.query(`CREATE TABLE "user_role" ("user_role_id" SERIAL NOT NULL, "user_id" integer NOT NULL, "role_id" integer NOT NULL, "active_status" boolean NOT NULL DEFAULT true, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "PK_77580f3bab637e39a7fdd01a94c" PRIMARY KEY ("user_role_id"))`);
+        await queryRunner.query(`CREATE TABLE "address" ("addr_id" SERIAL NOT NULL, "user_id" integer NOT NULL, "address_line1" character varying(100) NOT NULL, "address_line2" character varying(100) NOT NULL, "city" character varying(100) NOT NULL, "state" character varying(100) NOT NULL, "pincode" character varying(10) NOT NULL, "country" character varying(100) NOT NULL, "coordinates" character varying(60) NOT NULL, "addr_type" character varying(100) NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "PK_c5a56a888d613493ffa8c570708" PRIMARY KEY ("addr_id"))`);
+        await queryRunner.query(`CREATE TABLE "vehicle_detail" ("vehicle_id" SERIAL NOT NULL, "user_id" integer NOT NULL, "reg_num" character varying(20) NOT NULL, "make" character varying(10) NOT NULL, "model" character varying(50) NOT NULL, "booking_id" integer, CONSTRAINT "REL_25f4c49ae27c8159c115603ce4" UNIQUE ("booking_id"), CONSTRAINT "PK_d9112235661d0e8709e840cc41d" PRIMARY KEY ("vehicle_id"))`);
+        await queryRunner.query(`CREATE TABLE "user" ("user_id" SERIAL NOT NULL, "user_name" character varying(50) NOT NULL, "first_name" character varying(30) NOT NULL, "last_name" character varying(30) NOT NULL, "email_id" character varying(50), "password" character varying(200) NOT NULL, "mobile" character varying(20) NOT NULL, "active_status" boolean NOT NULL DEFAULT true, "last_login_dt" TIMESTAMP NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "UQ_d34106f8ec1ebaf66f4f8609dd6" UNIQUE ("user_name"), CONSTRAINT "UQ_95c07c16136adcfdcb8221c1fc9" UNIQUE ("email_id"), CONSTRAINT "PK_758b8ce7c18b9d347461b30228d" PRIMARY KEY ("user_id"))`);
+        await queryRunner.query(`CREATE TABLE "parking_slot" ("parking_slot_id" integer NOT NULL, "price" numeric NOT NULL, "grade" character varying(20) NOT NULL, CONSTRAINT "UQ_2214aa3e0c8a7d527781bff1a5c" UNIQUE ("grade"), CONSTRAINT "PK_5b55164e95c9f1f81473d60ed2a" PRIMARY KEY ("parking_slot_id"))`);
+        await queryRunner.query(`CREATE TABLE "payment" ("payment_id" SERIAL NOT NULL, "booking_id" integer NOT NULL, "payment_status" character varying(50) NOT NULL, "payment_amount" integer NOT NULL, "payment_method" integer NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "PK_9fff60ac6ac1844ea4e0cfba67a" PRIMARY KEY ("payment_id"))`);
+        await queryRunner.query(`CREATE TABLE "booking" ("booking_id" SERIAL NOT NULL, "user_id" integer NOT NULL, "parking_slot_id" integer NOT NULL, "from_dt" TIMESTAMP NOT NULL, "to_dt" TIMESTAMP NOT NULL, "rental_price" numeric NOT NULL, "extra_price" numeric NOT NULL, "discount_price" numeric NOT NULL, "final_price" numeric NOT NULL, "advance_paid" numeric NOT NULL, "booking_status" character varying(50) NOT NULL, "vehicle_id" integer NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "REL_e4646f77ce6e98b6cc2dfec793" UNIQUE ("parking_slot_id"), CONSTRAINT "REL_96920c53d9b83526064a5a9442" UNIQUE ("vehicle_id"), CONSTRAINT "PK_9ecc24640e39cd493c318a117f1" PRIMARY KEY ("booking_id"))`);
+        await queryRunner.query(`CREATE TABLE "hist_address" ("addr_id" integer NOT NULL, "user_id" integer NOT NULL, "address_line1" character varying(100) NOT NULL, "address_line2" character varying(100) NOT NULL, "city" character varying(100) NOT NULL, "state" character varying(100) NOT NULL, "pincode" character varying(10) NOT NULL, "country" character varying(100) NOT NULL, "coordinates" character varying(60) NOT NULL, "addr_type" character varying(100) NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "PK_380e563968fbb7365773b55a726" PRIMARY KEY ("addr_id", "modified_dt"))`);
+        await queryRunner.query(`CREATE TABLE "hist_booking" ("booking_id" integer NOT NULL, "user_id" integer NOT NULL, "parking_slot_id" integer NOT NULL, "from_dt" TIMESTAMP NOT NULL, "to_dt" TIMESTAMP NOT NULL, "rental_price" numeric NOT NULL, "extra_price" numeric NOT NULL, "discount_price" numeric NOT NULL, "final_price" numeric NOT NULL, "advance_paid" numeric NOT NULL, "booking_status" character varying(50) NOT NULL, "vehicle_id" character varying NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "PK_3c055fe6eba23a1191f2373b2e2" PRIMARY KEY ("booking_id", "modified_dt"))`);
+        await queryRunner.query(`CREATE TABLE "hist_user_role" ("user_role_id" integer NOT NULL, "user_id" integer NOT NULL, "role_id" integer NOT NULL, "active_status" boolean NOT NULL DEFAULT true, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "PK_93064a5cc4d7b0fe5a0b5f78180" PRIMARY KEY ("user_role_id", "modified_dt"))`);
+        await queryRunner.query(`CREATE TABLE "hist_payment" ("payment_id" integer NOT NULL, "booking_id" integer NOT NULL, "payment_status" character varying(50) NOT NULL, "payment_amount" integer NOT NULL, "payment_method" integer NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "PK_3444a7f0f203bffc25fc6b5c8dc" PRIMARY KEY ("payment_id", "modified_dt"))`);
+        await queryRunner.query(`CREATE TABLE "hist_user" ("user_id" integer NOT NULL, "user_name" character varying(50) NOT NULL, "first_name" character varying(30) NOT NULL, "last_name" character varying(30) NOT NULL, "email_id" character varying(50), "password" character varying(200) NOT NULL, "mobile" character varying(20) NOT NULL, "active_status" boolean NOT NULL DEFAULT true, "last_login_dt" TIMESTAMP NOT NULL, "created_dt" TIMESTAMP NOT NULL, "createdBy" character varying(50) NOT NULL, "modified_dt" TIMESTAMP NOT NULL, "modifiedBy" character varying(50) NOT NULL, CONSTRAINT "UQ_f157702ce514c877561b0c58512" UNIQUE ("email_id"), CONSTRAINT "PK_bddb6aaeec7bdd84cdfd71808a3" PRIMARY KEY ("user_id", "modified_dt"))`);
+        await queryRunner.query(`ALTER TABLE "user_role" ADD CONSTRAINT "FK_32a6fc2fcb019d8e3a8ace0f55f" FOREIGN KEY ("role_id") REFERENCES "role"("role_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user_role" ADD CONSTRAINT "FK_d0e5815877f7395a198a4cb0a46" FOREIGN KEY ("user_id") REFERENCES "user"("user_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "address" ADD CONSTRAINT "FK_35cd6c3fafec0bb5d072e24ea20" FOREIGN KEY ("user_id") REFERENCES "user"("user_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "vehicle_detail" ADD CONSTRAINT "FK_1705afc7471fef43531b01d7a06" FOREIGN KEY ("user_id") REFERENCES "user"("user_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "vehicle_detail" ADD CONSTRAINT "FK_25f4c49ae27c8159c115603ce4a" FOREIGN KEY ("booking_id") REFERENCES "booking"("booking_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "payment" ADD CONSTRAINT "FK_cee78453638dfaf440f1aa63c26" FOREIGN KEY ("booking_id") REFERENCES "booking"("booking_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "booking" ADD CONSTRAINT "FK_276896d1a1a30be6de9d7d43f53" FOREIGN KEY ("user_id") REFERENCES "user"("user_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "booking" ADD CONSTRAINT "FK_e4646f77ce6e98b6cc2dfec793e" FOREIGN KEY ("parking_slot_id") REFERENCES "parking_slot"("parking_slot_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "booking" ADD CONSTRAINT "FK_96920c53d9b83526064a5a9442a" FOREIGN KEY ("vehicle_id") REFERENCES "vehicle_detail"("vehicle_id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "booking" DROP CONSTRAINT "FK_96920c53d9b83526064a5a9442a"`);
+        await queryRunner.query(`ALTER TABLE "booking" DROP CONSTRAINT "FK_e4646f77ce6e98b6cc2dfec793e"`);
+        await queryRunner.query(`ALTER TABLE "booking" DROP CONSTRAINT "FK_276896d1a1a30be6de9d7d43f53"`);
+        await queryRunner.query(`ALTER TABLE "payment" DROP CONSTRAINT "FK_cee78453638dfaf440f1aa63c26"`);
+        await queryRunner.query(`ALTER TABLE "vehicle_detail" DROP CONSTRAINT "FK_25f4c49ae27c8159c115603ce4a"`);
+        await queryRunner.query(`ALTER TABLE "vehicle_detail" DROP CONSTRAINT "FK_1705afc7471fef43531b01d7a06"`);
+        await queryRunner.query(`ALTER TABLE "address" DROP CONSTRAINT "FK_35cd6c3fafec0bb5d072e24ea20"`);
+        await queryRunner.query(`ALTER TABLE "user_role" DROP CONSTRAINT "FK_d0e5815877f7395a198a4cb0a46"`);
+        await queryRunner.query(`ALTER TABLE "user_role" DROP CONSTRAINT "FK_32a6fc2fcb019d8e3a8ace0f55f"`);
+        await queryRunner.query(`DROP TABLE "hist_user"`);
+        await queryRunner.query(`DROP TABLE "hist_payment"`);
+        await queryRunner.query(`DROP TABLE "hist_user_role"`);
+        await queryRunner.query(`DROP TABLE "hist_booking"`);
+        await queryRunner.query(`DROP TABLE "hist_address"`);
+        await queryRunner.query(`DROP TABLE "booking"`);
+        await queryRunner.query(`DROP TABLE "payment"`);
+        await queryRunner.query(`DROP TABLE "parking_slot"`);
+        await queryRunner.query(`DROP TABLE "user"`);
+        await queryRunner.query(`DROP TABLE "vehicle_detail"`);
+        await queryRunner.query(`DROP TABLE "address"`);
+        await queryRunner.query(`DROP TABLE "user_role"`);
+        await queryRunner.query(`DROP TABLE "role"`);
+    }
+
+}
