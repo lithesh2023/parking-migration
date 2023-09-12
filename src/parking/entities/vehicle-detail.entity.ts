@@ -1,6 +1,5 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm'
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm'
 import { User } from './user.entity';
-import { Booking } from './booking.entity';
 
 @Entity ("vehicle_detail")
 export class VehicleDetail {
@@ -23,10 +22,6 @@ export class VehicleDetail {
     @ManyToOne(() => User, (user) => user.vehicles, {eager: true})
     @JoinColumn ([{ name: 'user_id', referencedColumnName: 'userId'}])
     user: User;
-
-    @OneToOne(() => Booking)
-    @JoinColumn([{ name: 'booking_id', referencedColumnName: 'bookingId'}])
-    booking: Booking;
 
 }
 
